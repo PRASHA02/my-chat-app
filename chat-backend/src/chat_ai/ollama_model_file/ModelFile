@@ -1,0 +1,24 @@
+# 1. Base Model
+FROM qwen3.5:9b
+
+# 2. Parameters for performance and behavior
+PARAMETER num_gpu 35
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+
+# 3. The Chat Template (Matches Qwen's internal training)
+# This prevents the model from hallucinating "User:" or "Assistant:" prefixes.
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ .Response }}<|im_end|>"""
+
+# 4. The System Prompt (The AI's "Personality")
+SYSTEM """You are a helpful AI assistant.
+- Respond DIRECTLY and IMMEDIATELY.
+- DO NOT use any internal thinking process, chain-of-thought, or <thought> tags.
+- Use Markdown for formatting."""

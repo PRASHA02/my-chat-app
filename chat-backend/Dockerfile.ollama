@@ -1,0 +1,13 @@
+FROM ollama/ollama:latest
+
+WORKDIR /app
+
+COPY src/chat_ai/ollama_model_file/ModelFile /app/ModelFile
+
+RUN nohup bash -c "ollama serve &" && \
+    sleep 5 && \
+    ollama pull qwen3.5:9b && \
+    ollama create qwen3.5:9b-custom -f /app/ModelFile && \
+    pkill ollama
+
+EXPOSE 11434
